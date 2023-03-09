@@ -215,7 +215,8 @@ function modalRender() {
                 </select>
             </form>  `;
 
-        croix.innerHTML += `<i id="arrow" class="fa-regular fa-arrow-left"></i>`;
+        croix.innerHTML += `<i id="arrow" class="fa-regular fa-arrow-left">
+        </i><i id="btn-close2" class="fa-sharp fa-solid fa-xmark"></i>`;
 
         const btnValider = `<input type="submit" value="Valider" id="btn-valider" />`;
 
@@ -226,6 +227,13 @@ function modalRender() {
         document.querySelector(".modal-articles").innerHTML = ``;
 
         document.querySelector(".modal-articles").innerHTML = undertitle;
+
+        const btnclose = document.querySelector("#btn-close2");
+
+        btnclose.addEventListener("click", function () {
+            modal.style.display = "none";
+            body.style.overflow = "visible";
+        });
 
         categoryshow.forEach((e) => {
             const option = `<option value="${e.name}">${e.name}</option>`;
@@ -261,11 +269,9 @@ function modalRender() {
 
 // Construction LogIn
 
-const btnLogin = document.getElementById("logIn");
-
 function loginRender() {
     const logIn = `
-    <header>
+            <header>
                 <h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1>
                 <nav>
                     <ul>
@@ -317,6 +323,7 @@ function loginRender() {
 
     myForm.addEventListener("submit", function (e) {
         let email = document.getElementById("email");
+
         let password = document.getElementById("password");
 
         if (password.value !== "S0phie") {
@@ -340,6 +347,8 @@ function loginRender() {
         }
     });
 }
+
+const btnLogin = document.getElementById("logIn");
 
 btnLogin.addEventListener("click", function () {
     return loginRender();
