@@ -69,9 +69,10 @@ triArticles();
 
 function render() {
     workshow.forEach((element) => {
-        const domElement = `<figure>
-        <img src="${element.imageUrl}" alt="${element.title}">
-        <figcaption>${element.title}</figcaption>
+        const domElement = `
+        <figure>
+            <img src="${element.imageUrl}" alt="${element.title}">
+            <figcaption>${element.title}</figcaption>
         </figure>`;
         document.querySelector(".gallery").innerHTML += domElement;
     });
@@ -197,15 +198,27 @@ function modalRender() {
 
     ajoutPht.addEventListener("click", function () {
         const title = `Ajout Photo`;
+
         document.querySelector(".modal-title").innerHTML = title;
 
-        const undertitle = `   <form action="" method="post">
+        const btnModal = document.querySelector(".modal-btn");
+
+        btnModal.style.display = "none";
+
+        const undertitle = `   
+            <form action="http://localhost:5678/api/works" id="form-ajtpht" method="post">
                 <div class="modal-ajtpht">
-                    <img src="https://media.admagazine.fr/photos/62c2ec61c47462b71586dc89/master/w_960,c_limit/52031931610_d533238048_o.jpg" id="image-upload">
+                    <div id="file-image-container">
+                        <img src="" id="image-upload">
+                        <div hidden id="file-text">
+                            <span>Supprimer la Photo</span>
+                        </div>
+                    </div> 
+                    <span id="alert-image-size"></span> 
                     <i id="img-modal" class="fa-regular fa-image"></i>
-                    <input type="file" id="file" required>
+                    <input type="file" id="file" accept="image/png, image/jpeg" required>
                     <label class="ajtpht-btn" for="file">+ Ajouter photo</label>
-                    <span>jpg, png : 4mo max</span>
+                    <span id="textRequired">jpg, png : 4mo max</span>
                 </div>
                 <label for="titre">Titre</label>
                   <input type="text" name="titre" id="titre" required>
@@ -213,16 +226,14 @@ function modalRender() {
                 <select name="category" id="category" required>
                     <option value="">--Choisissez une catégorie--</option>
                 </select>
+                <span id="missing"></span>
+                <div class="border-form">
+                    <input type="submit" value="Valider" id="submit-btn"  />
+                </div>
             </form>  `;
 
         croix.innerHTML += `<i id="arrow" class="fa-regular fa-arrow-left">
         </i><i id="btn-close2" class="fa-sharp fa-solid fa-xmark"></i>`;
-
-        const btnValider = `<input type="submit" value="Valider" id="btn-valider" />`;
-
-        document.querySelector(".modal-btn").innerHTML = ``;
-
-        document.querySelector(".modal-btn").innerHTML = btnValider;
 
         document.querySelector(".modal-articles").innerHTML = ``;
 
@@ -246,110 +257,91 @@ function modalRender() {
             return modalRender();
         });
 
+        // ****************** Preview image pour le input file ****************************
+
         const imgUpload = document.querySelector("#image-upload");
 
         const imgModal = document.querySelector("#img-modal");
 
-        const spanModal = document
-            .querySelector(".modal-ajtpht")
-            .querySelector("span");
+        const textRequiredAjoutPht = document.querySelector("#textRequired");
 
         const btnAjoutPht = document.querySelector(".ajtpht-btn");
 
-        btnAjoutPht.addEventListener("click", function () {
-            imgUpload.style.display = "block";
-            btnAjoutPht.style.display = "none";
-            imgModal.style.display = "none";
-            spanModal.style.display = "none";
+        const inputFile = document.querySelector("#file");
+
+        const textFile = document.querySelector("#file-text");
+
+        const imageFileContainer = document.querySelector(
+            "#file-image-container"
+        );
+
+        const errorSizeImage = document.querySelector("#alert-image-size");
+
+        inputFile.addEventListener("change", function () {
+            const [file] = inputFile.files;
+
+            if (file.size < 4000000) {
+                imgUpload.src = URL.createObjectURL(file);
+                imgUpload.style.display = "block";
+                imageFileContainer.style.display = "block";
+                btnAjoutPht.style.display = "none";
+                imgModal.style.display = "none";
+                textRequiredAjoutPht.style.display = "none";
+                textFile.classList.add("show");
+                document.querySelector("#alert-image-size").innerHTML = "";
+            } else {
+                errorSizeImage.innerHTML = `L'image ne doit pas dépasser 4Mo`;
+                errorSizeImage.style.color = "red";
+                inputFile.value = "";
+            }
+        });
+
+        // Bouton de suppression de la photo
+
+        imageFileContainer.addEventListener("click", function () {
+            imgUpload.style.display = "";
+            imageFileContainer.style.display = "";
+            btnAjoutPht.style.display = "";
+            imgModal.style.display = "";
+            textRequiredAjoutPht.style.display = "";
+            textFile.classList.remove("show");
+            inputFile.value = "";
+        });
+
+        // *********************** Message d'erreur remplissage formulaire ***********************
+
+        const errorMissingForm = document.querySelector("#missing");
+
+        const formulaire = document.querySelector("#form-ajtpht");
+
+        const inputTitre = document.querySelector("#titre");
+
+        const inputSelect = document.querySelector("#category");
+
+        const btnValidationForm = document.querySelector("#submit-btn");
+
+        formulaire.addEventListener("input", function () {
+            if (
+                inputFile.value === "" ||
+                inputTitre.value === "" ||
+                inputSelect.value === ""
+            ) {
+                errorMissingForm.innerHTML = `Veuillez renseigner tout les champs`;
+                errorMissingForm.style.color = "red";
+                btnValidationForm.style.background = "";
+            } else {
+                btnValidationForm.style.background = "#1d6154";
+                errorMissingForm.innerHTML = "";
+            }
         });
     });
 }
 
-// LOGIN
-
-// Construction LogIn
-
-function loginRender() {
-    const logIn = `
-            <header>
-                <h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1>
-                <nav>
-                    <ul>
-                        <li>projets</li>
-                        <li>contact</li>
-                        <li class="strong">login</li>
-                        <li>
-                            <img
-                                src="./assets/icons/instagram.png"
-                                alt="Instagram"
-                            />
-                        </li>
-                    </ul>
-                </nav>
-            </header>
-    
-            <!-- création division pour la mise en page -->
-            <div class="margin"></div>
-    
-            <section id="contact">
-                <h2>Log In</h2>
-                <form
-                    action="http://localhost:5678/api/users/login"
-                    method="post"
-                    id="myform"
-                >
-                    <label for="email">E-mail</label>
-                    <input type="email" name="email" id="email" required />
-                    <label for="password">Mot de passe</label>
-                    <input type="password" name="password" id="password" required />
-                    <br />
-                    <span id="error"></span>
-                    <input type="submit" value="Se connecter" id="btn-connexion" />
-                    <a href="#">Mot de passe oublié?</a>
-                </form>
-            </section>
-    
-            <footer>
-                <nav>
-                    <ul>
-                        <li>Mentions Légales</li>
-                    </ul>
-                </nav>
-            </footer>`;
-
-    document.querySelector("body").innerHTML = logIn;
-
-    let myForm = document.querySelector("#myform");
-
-    myForm.addEventListener("submit", function (e) {
-        let email = document.getElementById("email");
-
-        let password = document.getElementById("password");
-
-        if (password.value !== "S0phie") {
-            let myError = document.getElementById("error");
-            myError.innerHTML = "Erreur dans l’identifiant ou le mot de passe";
-            myError.style.color = "red";
-            e.preventDefault();
-        }
-        if (email.value !== "sophie.bluel@test.tld") {
-            let myError = document.getElementById("error");
-            myError.innerHTML = "Erreur dans l’identifiant ou le mot de passe";
-            myError.style.color = "red";
-            e.preventDefault();
-        }
-        if (
-            email.value == "sophie.bluel@test.tld" &&
-            password.value == "S0phie"
-        ) {
-            e.preventDefault();
-            location.href = "./index.html";
-        }
-    });
-}
+// ***************************** Redirection vers page Login *****************************
 
 const btnLogin = document.getElementById("logIn");
 
-btnLogin.addEventListener("click", function () {
-    return loginRender();
+btnLogin.addEventListener("click", function (e) {
+    e.preventDefault();
+    location.href = "../FrontEnd/Login.html";
 });
