@@ -1,8 +1,20 @@
-export function ajoutProjet() {
-    const validAjoutPhoto = document.querySelector("#sbmit-btn");
+// **************************** Fonction d'ajout projet ****************************
 
-    validAjoutPhoto.addEventListener("click", function (event) {
-        const id = event.target.dataset.id;
-        fetch(`http://localhost:5678/api/users/${id}/login`);
+export function ajoutListenerProjet() {
+    const formulaire = document.querySelector("#form-ajtpht");
+    formulaire.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const projets = {
+            file: parseInt(event.target.querySelector("[name=file]").value),
+            titre: event.target.querySelector("[name=titre]").value,
+            catégorie: event.target.querySelector("[name=category]").value,
+        };
+        const chargeUtile = JSON.stringify(projets);
+        fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: chargeUtile,
+        });
     });
 }

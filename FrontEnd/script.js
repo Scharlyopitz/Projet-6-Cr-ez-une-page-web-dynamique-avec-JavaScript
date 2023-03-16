@@ -1,3 +1,9 @@
+// import { ajoutListenerProjet } from "./ajoutProjet.js";
+
+// ajoutListenerProjet();
+
+// ****************** Recherche des API ******************
+
 // Recherche de l'API category
 
 let categoryshow = [];
@@ -14,40 +20,6 @@ async function triCategory() {
 }
 
 triCategory();
-
-function renderCategory() {
-    const categoryContainer = `<button class="active">Tous</button>`;
-    document.querySelector(".category_container").innerHTML = categoryContainer;
-    categoryshow.forEach((element) => {
-        const categoryContainer = `<button data-category="${element.name}">${element.name}</button>`;
-
-        document.querySelector(".category_container").innerHTML +=
-            categoryContainer;
-    });
-
-    // Ajout de la class "active" et affichage dynamique sur les boutons de trie
-
-    const categoryBtn = document
-        .querySelector(".category_container")
-        .querySelectorAll("button");
-    categoryBtn.forEach(function (element) {
-        element.addEventListener("click", function () {
-            categoryBtn.forEach(function (btn) {
-                btn.classList.remove("active");
-            });
-            element.classList.add("active");
-            workshow = work.filter(function (objet) {
-                return objet.category.name === element.dataset.category;
-            });
-            document.querySelector(".gallery").innerHTML = "";
-            if (element.dataset.category != null) {
-                render();
-            } else {
-                triArticles();
-            }
-        });
-    });
-}
 
 // Recherche de l'API works
 
@@ -67,6 +39,49 @@ async function triArticles() {
 
 triArticles();
 
+// ***************** Affichage du rendu categorie *****************
+
+function renderCategory() {
+    const categoryContainer = `<button class="active">Tous</button>`;
+
+    document.querySelector(".category_container").innerHTML = categoryContainer;
+
+    categoryshow.forEach((element) => {
+        const categoryContainer = `<button data-category="${element.name}">${element.name}</button>`;
+
+        document.querySelector(".category_container").innerHTML +=
+            categoryContainer;
+    });
+
+    // Ajout de la class "active" pour la couleur des boutons au "click" et affichage dynamique sur les boutons de trie
+
+    const categoryBtn = document
+        .querySelector(".category_container")
+        .querySelectorAll("button");
+
+    categoryBtn.forEach(function (element) {
+        element.addEventListener("click", function () {
+            categoryBtn.forEach(function (btn) {
+                btn.classList.remove("active");
+            });
+
+            element.classList.add("active");
+            workshow = work.filter(function (objet) {
+                return objet.category.name === element.dataset.category;
+            });
+
+            document.querySelector(".gallery").innerHTML = "";
+            if (element.dataset.category != null) {
+                render();
+            } else {
+                triArticles();
+            }
+        });
+    });
+}
+
+// ***************** Affichage du rendu des articles *****************
+
 function render() {
     workshow.forEach((element) => {
         const domElement = `
@@ -78,7 +93,7 @@ function render() {
     });
 }
 
-// Ajout du mode édition
+// ***************** Ajout du mode édition *****************
 
 const edition = `
 <i class="fa-regular fa-pen-to-square"></i>
@@ -86,14 +101,15 @@ const edition = `
 <button>publier les changements</button>`;
 document.querySelector(".mode-edition").innerHTML += edition;
 
-// Ajout butons de édition
+// Ajout des butons du mode édition
 
 const modif = `<i class="fa-regular fa-pen-to-square"></i>
 <p>modifier</p>`;
 document.querySelector(".modifier-btn").innerHTML += modif;
 document.querySelector(".modifier-btn2").innerHTML += modif;
 
-// Fonctionnemnt bouton édition au click
+// Fonctionnement des boutons édition au click + suppression de la barre des catégories à son activation
+
 const btn1 = document.querySelector(".modifier-btn");
 
 const btn2 = document.querySelector(".modifier-btn2");
@@ -108,7 +124,7 @@ foncEdition.addEventListener("click", function () {
     categoryContainer.classList.toggle("invisible");
 });
 
-// Affichage de la modal
+// ****************************** Affichage de la modal ******************************
 
 function modalRender() {
     const modalShow = `
@@ -135,34 +151,44 @@ function modalRender() {
     </div>`;
         document.querySelector(".modal-articles").innerHTML += domModal;
     });
-    const modal = document.querySelector(".modal");
+
+    // Boutons pour afficher / cacher la modal
 
     const btn = document.querySelector(".modifier-btn");
 
     const btn2 = document.querySelector(".modifier-btn2");
 
-    const span = document.getElementById("btn-close");
-
-    const croix = document.querySelector(".croix");
+    const modal = document.querySelector(".modal");
 
     const body = document.querySelector("body");
 
     btn.addEventListener("click", function () {
         modal.style.display = "block";
         body.style.overflow = "hidden";
+        return modalRender();
     });
 
     btn2.addEventListener("click", function () {
         modal.style.display = "block";
         body.style.overflow = "hidden";
+        return modalRender();
     });
+
+    const span = document.getElementById("btn-close");
 
     span.addEventListener("click", function () {
         modal.style.display = "none";
         body.style.overflow = "visible";
     });
 
-    // bouton de suppression des photos
+    window.addEventListener("click", function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            body.style.overflow = "visible";
+        }
+    });
+
+    // Bouton de suppression des photos dans la modal
 
     const trash = document
         .querySelector(".modal-articles")
@@ -190,7 +216,7 @@ function modalRender() {
         });
     });
 
-    // Bouton d'ajout Photo
+    // ***************** Bouton affichage modal "Ajout Photo" *****************
 
     const ajoutPht = document
         .querySelector(".modal-btn")
@@ -216,7 +242,7 @@ function modalRender() {
                     </div> 
                     <span id="alert-image-size"></span> 
                     <i id="img-modal" class="fa-regular fa-image"></i>
-                    <input type="file" id="file" accept="image/png, image/jpeg" required>
+                    <input type="file" id="file" name="file" accept="image/png, image/jpeg" required>
                     <label class="ajtpht-btn" for="file">+ Ajouter photo</label>
                     <span id="textRequired">jpg, png : 4mo max</span>
                 </div>
@@ -232,7 +258,8 @@ function modalRender() {
                 </div>
             </form>  `;
 
-        croix.innerHTML += `<i id="arrow" class="fa-regular fa-arrow-left">
+        document.querySelector(".croix").innerHTML += `
+        <i id="arrow" class="fa-regular fa-arrow-left">
         </i><i id="btn-close2" class="fa-sharp fa-solid fa-xmark"></i>`;
 
         document.querySelector(".modal-articles").innerHTML = ``;
@@ -245,6 +272,8 @@ function modalRender() {
             modal.style.display = "none";
             body.style.overflow = "visible";
         });
+
+        // Ajout des categories avec API + bouton de retour en arrière
 
         categoryshow.forEach((e) => {
             const option = `<option value="${e.name}">${e.name}</option>`;
@@ -277,6 +306,8 @@ function modalRender() {
 
         const errorSizeImage = document.querySelector("#alert-image-size");
 
+        // Affichage du contenu de l'input + suppression des éléments précédent pour la mise en page
+
         inputFile.addEventListener("change", function () {
             const [file] = inputFile.files;
 
@@ -287,7 +318,6 @@ function modalRender() {
                 btnAjoutPht.style.display = "none";
                 imgModal.style.display = "none";
                 textRequiredAjoutPht.style.display = "none";
-                textFile.classList.add("show");
                 document.querySelector("#alert-image-size").innerHTML = "";
             } else {
                 errorSizeImage.innerHTML = `L'image ne doit pas dépasser 4Mo`;
@@ -298,13 +328,12 @@ function modalRender() {
 
         // Bouton de suppression de la photo
 
-        imageFileContainer.addEventListener("click", function () {
+        textFile.addEventListener("click", function () {
             imgUpload.style.display = "";
             imageFileContainer.style.display = "";
             btnAjoutPht.style.display = "";
             imgModal.style.display = "";
             textRequiredAjoutPht.style.display = "";
-            textFile.classList.remove("show");
             inputFile.value = "";
         });
 
@@ -320,7 +349,7 @@ function modalRender() {
 
         const btnValidationForm = document.querySelector("#submit-btn");
 
-        formulaire.addEventListener("input", function () {
+        formulaire.addEventListener("input", function (e) {
             if (
                 inputFile.value === "" ||
                 inputTitre.value === "" ||
