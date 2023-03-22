@@ -1,24 +1,28 @@
 let myForm = document.querySelector("#myform");
 
 myForm.addEventListener("submit", function (e) {
-    let email = document.getElementById("email");
+    e.preventDefault();
 
-    let password = document.getElementById("password");
-
-    if (password.value !== "S0phie") {
-        let myError = document.getElementById("error");
-        myError.innerHTML = "Erreur dans l’identifiant ou le mot de passe";
-        myError.style.color = "red";
-        e.preventDefault();
-    }
-    if (email.value !== "sophie.bluel@test.tld") {
-        let myError = document.getElementById("error");
-        myError.innerHTML = "Erreur dans l’identifiant ou le mot de passe";
-        myError.style.color = "red";
-        e.preventDefault();
-    }
     if (email.value == "sophie.bluel@test.tld" && password.value == "S0phie") {
-        e.preventDefault();
-        location.href = "./index.html";
+        fetch("http://localhost:5678/api/users/login", {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value,
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) =>
+                localStorage.setItem("token", JSON.stringify({ data }))
+            );
+        // .then((location.href = "./index.html"));
+    } else {
+        let myError = document.getElementById("error");
+        myError.innerHTML = "Erreur dans l’identifiant ou le mot de passe";
+        myError.style.color = "red";
     }
 });

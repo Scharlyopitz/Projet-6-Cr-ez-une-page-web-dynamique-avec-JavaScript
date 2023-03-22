@@ -1,3 +1,6 @@
+let token = localStorage.getItem("token");
+console.log(token);
+
 // import { ajoutListenerProjet } from "./ajoutProjet.js";
 
 // ajoutListenerProjet();
@@ -6,22 +9,21 @@
 
 // Recherche de l'API category
 
-let categoryshow = [];
-
-let category = [];
-
-async function triCategory() {
-    await fetch("http://localhost:5678/api/categories")
-        .then((response) => response.json())
-        .then((data) => (category = data))
-        .catch((err) => console.log(err));
-    categoryshow = category;
-    renderCategory();
-}
-
 triCategory();
 
+let categoryshow = [];
+
+function triCategory() {
+    fetch("http://localhost:5678/api/categories")
+        .then((response) => response.json())
+        .then((data) => (categoryshow = data))
+        .then(renderCategory)
+        .catch((err) => console.log(err));
+}
+
 // Recherche de l'API works
+
+triArticles();
 
 let workshow = [];
 
@@ -36,8 +38,6 @@ async function triArticles() {
     render();
     modalRender();
 }
-
-triArticles();
 
 // ***************** Affichage du rendu categorie *****************
 
@@ -196,11 +196,9 @@ function modalRender() {
 
     const article = document.querySelectorAll(".article");
 
-    trash.forEach(function (element) {
+    trash.forEach(function (element, i) {
         element.addEventListener("click", function () {
-            article.forEach(function (btn) {
-                btn.style.display = "none";
-            });
+            article[i].style.display = "none";
         });
     });
 
@@ -286,7 +284,7 @@ function modalRender() {
             return modalRender();
         });
 
-        // ****************** Preview image pour le input file ****************************
+        // ************ Elements du DOM pour l'aperçu de l'image de l'input file ************
 
         const imgUpload = document.querySelector("#image-upload");
 
@@ -298,46 +296,48 @@ function modalRender() {
 
         const inputFile = document.querySelector("#file");
 
-        const textFile = document.querySelector("#file-text");
-
         const imageFileContainer = document.querySelector(
             "#file-image-container"
         );
 
         const errorSizeImage = document.querySelector("#alert-image-size");
 
-        // Affichage du contenu de l'input + suppression des éléments précédent pour la mise en page
+        // Fonction pour l'affichage / supression de l'image input file
 
-        inputFile.addEventListener("change", function () {
-            const [file] = inputFile.files;
+        function imageInputFile() {
+            inputFile.addEventListener("change", function () {
+                const [file] = inputFile.files;
 
-            if (file.size < 4000000) {
-                imgUpload.src = URL.createObjectURL(file);
-                imgUpload.style.display = "block";
-                imageFileContainer.style.display = "block";
-                btnAjoutPht.style.display = "none";
-                imgModal.style.display = "none";
-                textRequiredAjoutPht.style.display = "none";
-                document.querySelector("#alert-image-size").innerHTML = "";
-            } else {
-                errorSizeImage.innerHTML = `L'image ne doit pas dépasser 4Mo`;
-                errorSizeImage.style.color = "red";
+                if (file.size < 4000000) {
+                    imgUpload.src = URL.createObjectURL(file);
+                    imgUpload.style.display = "block";
+                    imageFileContainer.style.display = "block";
+                    btnAjoutPht.style.display = "none";
+                    imgModal.style.display = "none";
+                    textRequiredAjoutPht.style.display = "none";
+                    document.querySelector("#alert-image-size").innerHTML = "";
+                } else {
+                    errorSizeImage.innerHTML = `L'image ne doit pas dépasser 4Mo`;
+                    errorSizeImage.style.color = "red";
+                    inputFile.value = "";
+                }
+            });
+
+            // Bouton de suppression de la photo
+
+            const textFile = document.querySelector("#file-text");
+
+            textFile.addEventListener("click", function () {
+                imgUpload.style.display = "";
+                imageFileContainer.style.display = "";
+                btnAjoutPht.style.display = "";
+                imgModal.style.display = "";
+                textRequiredAjoutPht.style.display = "";
                 inputFile.value = "";
-            }
-        });
+            });
+        }
 
-        // Bouton de suppression de la photo
-
-        textFile.addEventListener("click", function () {
-            imgUpload.style.display = "";
-            imageFileContainer.style.display = "";
-            btnAjoutPht.style.display = "";
-            imgModal.style.display = "";
-            textRequiredAjoutPht.style.display = "";
-            inputFile.value = "";
-        });
-
-        // *********************** Message d'erreur remplissage formulaire ***********************
+        // ****** Elements du DOM pour le remplissage du formulaire ******
 
         const errorMissingForm = document.querySelector("#missing");
 
@@ -349,28 +349,46 @@ function modalRender() {
 
         const btnValidationForm = document.querySelector("#submit-btn");
 
-        formulaire.addEventListener("input", function (e) {
+        // Remplissage du formulaire (input validation)
+
+        formulaire.addEventListener("input", function () {
             if (
                 inputFile.value === "" ||
                 inputTitre.value === "" ||
                 inputSelect.value === ""
             ) {
-                errorMissingForm.innerHTML = `Veuillez renseigner tout les champs`;
+                errorMissingForm.innerHTML =
+                    "Veuillez renseigner tout les champs";
                 errorMissingForm.style.color = "red";
                 btnValidationForm.style.background = "";
             } else {
                 btnValidationForm.style.background = "#1d6154";
                 errorMissingForm.innerHTML = "";
             }
+            imageInputFile();
+        });
+
+        // ************ Ajout de l'article sur l'API en "POST" ************
+
+        formulaire.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let formdata = new FormData(formulaire);
+            const data = new URLSearchParams(formdata);
+
+            fetch("http://localhost:5678/api/works", {
+                method: "POST",
+                headers: {
+                    Authorization:
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY3OTM0MDk5MCwiZXhwIjoxNjc5NDI3MzkwfQ.LMvlrxqYlHIiGSs_63PgIXxtJdKTkm3q7Z_1n27slhE",
+                    "Content-Type": "multipart/form-data",
+                    accept: "application/json",
+                },
+                body: data,
+            })
+                .then((res) => res.json())
+                .then((data) => console.log(data))
+                .catch((error) => console.log(error));
         });
     });
 }
-
-// ***************************** Redirection vers page Login *****************************
-
-const btnLogin = document.getElementById("logIn");
-
-btnLogin.addEventListener("click", function (e) {
-    e.preventDefault();
-    location.href = "../FrontEnd/Login.html";
-});

@@ -5,16 +5,15 @@ export function ajoutListenerProjet() {
     formulaire.addEventListener("submit", function (event) {
         event.preventDefault();
 
-        const projets = {
+        const projects = {
             file: parseInt(event.target.querySelector("[name=file]").value),
             titre: event.target.querySelector("[name=titre]").value,
             catégorie: event.target.querySelector("[name=category]").value,
         };
-        const chargeUtile = JSON.stringify(projets);
         fetch("http://localhost:5678/api/works", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: chargeUtile,
+            body: JSON.stringify(projects),
         });
     });
 }
