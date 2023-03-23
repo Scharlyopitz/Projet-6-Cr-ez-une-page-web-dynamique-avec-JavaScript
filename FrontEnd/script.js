@@ -1,10 +1,3 @@
-let token = localStorage.getItem("token");
-console.log(token);
-
-// import { ajoutListenerProjet } from "./ajoutProjet.js";
-
-// ajoutListenerProjet();
-
 // ****************** Recherche des API ******************
 
 // Recherche de l'API category
@@ -370,6 +363,12 @@ function modalRender() {
 
         // ************ Ajout de l'article sur l'API en "POST" ************
 
+        // Stockage du token
+
+        let resAPIlogIn = localStorage.getItem("token");
+        let tokenJson = JSON.parse(resAPIlogIn);
+        let token = tokenJson.data.token;
+
         formulaire.addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -379,8 +378,7 @@ function modalRender() {
             fetch("http://localhost:5678/api/works", {
                 method: "POST",
                 headers: {
-                    Authorization:
-                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY3OTM0MDk5MCwiZXhwIjoxNjc5NDI3MzkwfQ.LMvlrxqYlHIiGSs_63PgIXxtJdKTkm3q7Z_1n27slhE",
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
                     accept: "application/json",
                 },
