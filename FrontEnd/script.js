@@ -191,37 +191,29 @@ function modalRender() {
 
     // Bouton de suppression des photos dans la modal
 
-    // ne peut pas avoir 2 forEach!!!!!!!!!
+    function deleteWorks() {
+        fetch(`http://localhost:5678/api/works/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                accept: "*/*",
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => console.log(data));
+    }
 
-    // workshow.forEach((element) => {
-    //     let id = `${element.id}`;
+    const trash = document
+        .querySelector(".modal-articles")
+        .querySelectorAll("i");
 
-    //     const trash = document
-    //         .querySelector(".modal-articles")
-    //         .querySelectorAll("i");
+    const article = document.querySelectorAll(".article");
 
-    //     trash.forEach(function (element) {
-    //         element.addEventListener("click", function () {
-    //             fetch(`http://localhost:5678/api/works/${id}`, {
-    //                 method: "DELETE",
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                     accept: "*/*",
-    //                 },
-    //             })
-    //                 .then((res) => res.json())
-    //                 .then((data) => console.log(data));
-    //         });
-    //     });
-    // });
-
-    // const article = document.querySelectorAll(".article");
-
-    // trash.forEach(function (element, i) {
-    //     element.addEventListener("click", function () {
-    //         article[i].style.display = "none";
-    //     });
-    // });
+    trash.forEach(function (element, i) {
+        element.addEventListener("click", function () {
+            article[i].style.display = "none";
+        });
+    });
 
     // Bouton de suppression de la galerie
 

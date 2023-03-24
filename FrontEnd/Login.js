@@ -3,7 +3,6 @@ let myForm = document.querySelector("#myform");
 myForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    // if (email.value == "sophie.bluel@test.tld" && password.value == "S0phie") {
     fetch("http://localhost:5678/api/users/login", {
         method: "POST",
         headers: {
@@ -17,12 +16,23 @@ myForm.addEventListener("submit", function (e) {
     })
         .then((res) => res.json())
         .then((data) => {
+            Login(data);
             localStorage.setItem("token", JSON.stringify({ data }));
-            location.href = "./index.html";
         });
-    // } else {
-    //     let myError = document.getElementById("error");
-    //     myError.innerHTML = "Erreur dans l’identifiant ou le mot de passe";
-    //     myError.style.color = "red";
-    // }
 });
+
+// Stockage du token
+
+let resAPIlogIn = localStorage.getItem("token");
+let tokenJson = JSON.parse(resAPIlogIn);
+let token = tokenJson.data.token;
+
+function Login(data) {
+    if (data.token) {
+        location.href = "./index.html";
+    } else {
+        let myError = document.getElementById("error");
+        myError.innerHTML = "Erreur dans l’identifiant ou le mot de passe";
+        myError.style.color = "red";
+    }
+}
