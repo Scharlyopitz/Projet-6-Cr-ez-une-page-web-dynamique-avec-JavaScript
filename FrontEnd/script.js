@@ -134,7 +134,7 @@ function modalRender() {
     </div>`;
     document.querySelector(".modal").innerHTML = modalShow;
     workshow.forEach((element) => {
-        const domModal = `<div class="article">
+        const domModal = `<div class="article" data-id="${element.id}">
         <img
             src="${element.imageUrl}"
             alt=""
@@ -181,19 +181,47 @@ function modalRender() {
         }
     });
 
+    // ************ Suppression des travaux dans l'API ************
+
+    // Stockage du token
+
+    let resAPIlogIn = localStorage.getItem("token");
+    let tokenJson = JSON.parse(resAPIlogIn);
+    let token = tokenJson.data.token;
+
     // Bouton de suppression des photos dans la modal
 
-    const trash = document
-        .querySelector(".modal-articles")
-        .querySelectorAll("i");
+    // ne peut pas avoir 2 forEach!!!!!!!!!
 
-    const article = document.querySelectorAll(".article");
+    // workshow.forEach((element) => {
+    //     let id = `${element.id}`;
 
-    trash.forEach(function (element, i) {
-        element.addEventListener("click", function () {
-            article[i].style.display = "none";
-        });
-    });
+    //     const trash = document
+    //         .querySelector(".modal-articles")
+    //         .querySelectorAll("i");
+
+    //     trash.forEach(function (element) {
+    //         element.addEventListener("click", function () {
+    //             fetch(`http://localhost:5678/api/works/${id}`, {
+    //                 method: "DELETE",
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                     accept: "*/*",
+    //                 },
+    //             })
+    //                 .then((res) => res.json())
+    //                 .then((data) => console.log(data));
+    //         });
+    //     });
+    // });
+
+    // const article = document.querySelectorAll(".article");
+
+    // trash.forEach(function (element, i) {
+    //     element.addEventListener("click", function () {
+    //         article[i].style.display = "none";
+    //     });
+    // });
 
     // Bouton de suppression de la galerie
 
@@ -362,12 +390,6 @@ function modalRender() {
         });
 
         // ************ Ajout de l'article sur l'API en "POST" ************
-
-        // Stockage du token
-
-        let resAPIlogIn = localStorage.getItem("token");
-        let tokenJson = JSON.parse(resAPIlogIn);
-        let token = tokenJson.data.token;
 
         formulaire.addEventListener("submit", function (e) {
             e.preventDefault();
