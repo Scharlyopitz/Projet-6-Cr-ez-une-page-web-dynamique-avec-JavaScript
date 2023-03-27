@@ -266,6 +266,10 @@ footer nav ul {
 
 /* Bandeau du mode édition */
 
+.unhide {
+    display: flex;
+}
+
 .mode-edition {
     display: flex;
     position: fixed;

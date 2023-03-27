@@ -86,13 +86,7 @@ function render() {
     });
 }
 
-// ***************** Ajout du mode édition *****************
-
-const edition = `
-<i class="fa-regular fa-pen-to-square"></i>
-<p>Mode édition</p>
-<button>publier les changements</button>`;
-document.querySelector(".mode-edition").innerHTML += edition;
+// ***************** Mode Edition *****************
 
 // Ajout des butons du mode édition
 
@@ -133,6 +127,7 @@ function modalRender() {
         </div>
     </div>`;
     document.querySelector(".modal").innerHTML = modalShow;
+
     workshow.forEach((element) => {
         const domModal = `<div class="article" data-id="${element.id}">
         <img
@@ -140,7 +135,7 @@ function modalRender() {
             alt=""
         />
         <p>éditer</p>
-        <i data-image="${element.imageUrl}" class="fa-solid fa-trash-can"></i>
+        <i data-id="${element.id}" class="fa-solid fa-trash-can"></i>
     </div>`;
         document.querySelector(".modal-articles").innerHTML += domModal;
     });
@@ -191,27 +186,26 @@ function modalRender() {
 
     // Bouton de suppression des photos dans la modal
 
-    function deleteWorks() {
-        fetch(`http://localhost:5678/api/works/${id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                accept: "*/*",
-            },
-        })
-            .then((res) => res.json())
-            .then((data) => console.log(data));
-    }
-
     const trash = document
         .querySelector(".modal-articles")
         .querySelectorAll("i");
 
     const article = document.querySelectorAll(".article");
 
-    trash.forEach(function (element, i) {
+    trash.forEach(function (element) {
         element.addEventListener("click", function () {
-            article[i].style.display = "none";
+            // deleteWorks(element.parentElement);
+            let id = element.dataset.id;
+
+            fetch(`http://localhost:5678/api/works/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    accept: "*/*",
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => console.log(data));
         });
     });
 
@@ -223,7 +217,17 @@ function modalRender() {
 
     suprGallery.addEventListener("click", function () {
         article.forEach(function (e) {
-            e.style.display = "none";
+            let id = e.dataset.id;
+
+            fetch(`http://localhost:5678/api/works/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    accept: "*/*",
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => console.log(data));
         });
     });
 
