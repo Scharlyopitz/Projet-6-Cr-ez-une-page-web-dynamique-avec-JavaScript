@@ -577,6 +577,7 @@ header li img {
     position: absolute;
     top: 78.5%;
     left: 0;
+    color: red;
 }
 
 /* Modal d'ajout photo */

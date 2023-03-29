@@ -91,15 +91,20 @@ function render() {
 // Stockage du token
 
 let resAPIlogIn = localStorage.getItem("token");
+
 let tokenJson = JSON.parse(resAPIlogIn);
+
 let token = tokenJson.data.token;
 
 // Appartition du mode édition à la récupération du token
 
 if (localStorage.getItem("token")) {
     document.getElementById("logIn").innerHTML = "logout";
+
     document.getElementById("logIn").style.fontWeight = "600";
+
     document.querySelector(".mode-edition").classList.add("unhide");
+
     document.querySelector("header").style.marginTop = "100px";
 }
 
@@ -113,7 +118,9 @@ document.getElementById("logIn").addEventListener("click", () => {
 
 const modif = `<i class="fa-regular fa-pen-to-square"></i>
 <p>modifier</p>`;
+
 document.querySelector(".modifier-btn").innerHTML += modif;
+
 document.querySelector(".modifier-btn2").innerHTML += modif;
 
 // Fonctionnement des boutons édition au click + suppression de la barre des catégories à son activation
@@ -128,7 +135,9 @@ const foncEdition = document.querySelector(".mode-edition").querySelector("p");
 
 foncEdition.addEventListener("click", function () {
     btn1.classList.toggle("invisible");
+
     btn2.classList.toggle("invisible");
+
     categoryContainer.classList.toggle("invisible");
 });
 
@@ -267,14 +276,14 @@ function modalRender() {
                     </div> 
                     <span id="alert-image-size"></span> 
                     <i id="img-modal" class="fa-regular fa-image"></i>
-                    <input type="file" id="file" name="file" accept="image/png, image/jpeg" required>
+                    <input type="file" id="file" name="file" accept="image/png, image/jpeg" >
                     <label class="ajtpht-btn" for="file">+ Ajouter photo</label>
                     <span id="textRequired">jpg, png : 4mo max</span>
                 </div>
                 <label for="titre">Titre</label>
-                  <input type="text" name="titre" id="titre" required>
+                  <input type="text" name="titre" id="titre" >
                   <label for="category">Categorie</label>
-                <select name="category" id="category" required>
+                <select name="category" id="category" >
                     <option value="">--Choisissez une catégorie--</option>
                 </select>
                 <span id="missing"></span>
@@ -352,9 +361,9 @@ function modalRender() {
 
             // Bouton de suppression de la photo
 
-            const textFile = document.querySelector("#file-text");
+            const deletePhoto = document.querySelector("#file-text");
 
-            textFile.addEventListener("click", function () {
+            deletePhoto.addEventListener("click", function () {
                 imgUpload.style.display = "";
                 imageFileContainer.style.display = "";
                 btnAjoutPht.style.display = "";
@@ -363,6 +372,8 @@ function modalRender() {
                 inputFile.value = "";
             });
         }
+
+        imageInputFile();
 
         // ****** Elements du DOM pour le remplissage du formulaire ******
 
@@ -376,7 +387,7 @@ function modalRender() {
 
         const btnValidationForm = document.querySelector("#submit-btn");
 
-        // Remplissage du formulaire (input validation)
+        // Ecouteur d'évènment pour la couleur du bouton du formulaire
 
         formulaire.addEventListener("input", function () {
             if (
@@ -384,15 +395,12 @@ function modalRender() {
                 inputTitre.value === "" ||
                 inputSelect.value === ""
             ) {
-                errorMissingForm.innerHTML =
-                    "Veuillez renseigner tout les champs";
-                errorMissingForm.style.color = "red";
                 btnValidationForm.style.background = "";
             } else {
                 btnValidationForm.style.background = "#1d6154";
+
                 errorMissingForm.innerHTML = "";
             }
-            imageInputFile();
         });
 
         // ************ Ajout de l'article sur l'API en "POST" ************
@@ -400,23 +408,47 @@ function modalRender() {
         formulaire.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            // Valeur des inputs
+            // Traitement cas par cas pour les messages d'erreur
+
+            if (inputFile.value === "") {
+                errorMissingForm.innerHTML = "Veuillez ajouter une photo";
+            } else if (inputTitre.value === "") {
+                errorMissingForm.innerHTML = "Veuillez ajouter un titre";
+            } else if (inputSelect.value === "") {
+                errorMissingForm.innerHTML =
+                    "Veuillez sélectionner une catégorie";
+            }
+
+            // Formdata pour l'envoie du formulaire avec image
 
             let formData = new FormData();
+
             formData.append("image", e.target.file.files[0]);
+
             formData.append("title", e.target.titre.value);
+
             formData.append("category", e.target.category.value);
 
-            fetch("http://localhost:5678/api/works", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-                .then((res) => res.json())
-                .then((data) => console.log(data))
-                .catch((error) => console.log(error));
+            // Traitement du fetch une fois que tout le formulaire est rempli
+
+            if (
+                inputFile.value !== "" &&
+                inputTitre.value !== "" &&
+                inputSelect.value !== ""
+            ) {
+                fetch("http://localhost:5678/api/works", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then((res) => res.json())
+                    .then((data) => console.log(data))
+                    .catch((error) => console.log(error));
+            } else {
+                btnValidationForm.style.background = "";
+            }
         });
     });
 }
