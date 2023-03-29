@@ -88,6 +88,27 @@ function render() {
 
 // ***************** Mode Edition *****************
 
+// Stockage du token
+
+let resAPIlogIn = localStorage.getItem("token");
+let tokenJson = JSON.parse(resAPIlogIn);
+let token = tokenJson.data.token;
+
+// Appartition du mode édition à la récupération du token
+
+if (localStorage.getItem("token")) {
+    document.getElementById("logIn").innerHTML = "logout";
+    document.getElementById("logIn").style.fontWeight = "600";
+    document.querySelector(".mode-edition").classList.add("unhide");
+    document.querySelector("header").style.marginTop = "100px";
+}
+
+// Suppression du token au logOut
+
+document.getElementById("logIn").addEventListener("click", () => {
+    localStorage.removeItem("token");
+});
+
 // Ajout des butons du mode édition
 
 const modif = `<i class="fa-regular fa-pen-to-square"></i>
@@ -178,12 +199,6 @@ function modalRender() {
 
     // ************ Suppression des travaux dans l'API ************
 
-    // Stockage du token
-
-    let resAPIlogIn = localStorage.getItem("token");
-    let tokenJson = JSON.parse(resAPIlogIn);
-    let token = tokenJson.data.token;
-
     // Bouton de suppression des photos dans la modal
 
     const trash = document
@@ -194,7 +209,6 @@ function modalRender() {
 
     trash.forEach(function (element) {
         element.addEventListener("click", function () {
-            // deleteWorks(element.parentElement);
             let id = element.dataset.id;
 
             fetch(`http://localhost:5678/api/works/${id}`, {
@@ -238,16 +252,12 @@ function modalRender() {
         .querySelector("button");
 
     ajoutPht.addEventListener("click", function () {
-        const title = `Ajout Photo`;
+        document.querySelector(".modal-title").innerHTML = `Ajout Photo`;
 
-        document.querySelector(".modal-title").innerHTML = title;
-
-        const btnModal = document.querySelector(".modal-btn");
-
-        btnModal.style.display = "none";
+        document.querySelector(".modal-btn").style.display = "none";
 
         const undertitle = `   
-            <form action="http://localhost:5678/api/works" id="form-ajtpht" method="post">
+            <form  id="form-ajtpht" method="POST">
                 <div class="modal-ajtpht">
                     <div id="file-image-container">
                         <img src="" id="image-upload">
@@ -390,17 +400,19 @@ function modalRender() {
         formulaire.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            let formdata = new FormData(formulaire);
-            const data = new URLSearchParams(formdata);
+            // Valeur des inputs
+
+            let formData = new FormData();
+            formData.append("image", e.target.file.files[0]);
+            formData.append("title", e.target.titre.value);
+            formData.append("category", e.target.category.value);
 
             fetch("http://localhost:5678/api/works", {
                 method: "POST",
+                body: formData,
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
-                    accept: "application/json",
                 },
-                body: data,
             })
                 .then((res) => res.json())
                 .then((data) => console.log(data))
