@@ -220,6 +220,8 @@ function modalRender() {
         element.addEventListener("click", function () {
             let id = element.dataset.id;
 
+            element.parentElement.remove();
+
             fetch(`http://localhost:5678/api/works/${id}`, {
                 method: "DELETE",
                 headers: {
@@ -284,7 +286,7 @@ function modalRender() {
                   <input type="text" name="titre" id="titre" >
                   <label for="category">Categorie</label>
                 <select name="category" id="category" >
-                    <option value="">--Choisissez une catégorie--</option>
+                    <option value="">-- Choisissez une catégorie --</option>
                 </select>
                 <span id="missing"></span>
                 <div class="border-form">
@@ -310,7 +312,7 @@ function modalRender() {
         // Ajout des categories avec API + bouton de retour en arrière
 
         categoryshow.forEach((e) => {
-            const option = `<option value="${e.name}">${e.name}</option>`;
+            const option = `<option data-categorie="${e.id}" value="${e.name}">${e.name}</option>`;
             document.getElementById("category").innerHTML += option;
         });
 
