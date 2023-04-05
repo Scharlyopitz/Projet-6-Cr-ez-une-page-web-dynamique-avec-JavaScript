@@ -1,40 +1,40 @@
 // ****************** Recherche des API ******************
 
-// Recherche de l'API category
+// Recherche de l'API pour les categories
 
-triCategory();
+displayCategory();
 
 let categoryshow = [];
 
-function triCategory() {
+function displayCategory() {
     fetch("http://localhost:5678/api/categories")
         .then((response) => response.json())
         .then((data) => (categoryshow = data))
-        .then(renderCategory)
+        .then(categoryRender)
         .catch((err) => console.log(err));
 }
 
-// Recherche de l'API works
+// Recherche de l'API pour les travaux
 
-triArticles();
+displayWork();
 
 let workshow = [];
 
 let work = [];
 
-async function triArticles() {
+async function displayWork() {
     await fetch("http://localhost:5678/api/works")
         .then((response) => response.json())
         .then((data) => (work = data))
         .catch((err) => console.log(err));
     workshow = work;
-    render();
+    workRender();
     modalRender();
 }
 
 // ***************** Affichage du rendu categorie *****************
 
-function renderCategory() {
+function categoryRender() {
     const categoryContainer = `<button id="Tous" class="active">Tous</button>`;
 
     document.querySelector(".category_container").innerHTML = categoryContainer;
@@ -65,9 +65,9 @@ function renderCategory() {
 
             document.querySelector(".gallery").innerHTML = "";
             if (element.dataset.category != null) {
-                render();
+                workRender();
             } else {
-                triArticles();
+                displayWork();
             }
         });
     });
@@ -75,7 +75,7 @@ function renderCategory() {
 
 // ***************** Affichage du rendu des articles *****************
 
-function render() {
+function workRender() {
     workshow.forEach((element) => {
         const domElement = `
         <figure data-id="${element.id}">
@@ -90,9 +90,9 @@ function render() {
 
 // Stockage du token
 
-let resAPIlogIn = localStorage.getItem("token");
+let resultApiLogin = localStorage.getItem("token");
 
-let tokenJson = JSON.parse(resAPIlogIn);
+let tokenJson = JSON.parse(resultApiLogin);
 
 let token = tokenJson.data.token;
 
@@ -116,27 +116,28 @@ document.getElementById("logIn").addEventListener("click", () => {
 
 // Ajout des butons du mode édition
 
-const modif = `<i class="fa-regular fa-pen-to-square"></i>
+const modifBtn = `
+<i class="fa-regular fa-pen-to-square"></i>
 <p>modifier</p>`;
 
-document.querySelector(".modifier-btn").innerHTML += modif;
+document.querySelector(".modifier-btn").innerHTML += modifBtn;
 
-document.querySelector(".modifier-btn2").innerHTML += modif;
+document.querySelector(".modifier-btn2").innerHTML += modifBtn;
 
 // Fonctionnement des boutons édition au click + suppression de la barre des catégories à son activation
 
-const btn1 = document.querySelector(".modifier-btn");
+const modifBtn1 = document.querySelector(".modifier-btn");
 
-const btn2 = document.querySelector(".modifier-btn2");
+const modifBtn2 = document.querySelector(".modifier-btn2");
 
 const categoryContainer = document.querySelector(".category_container");
 
 const foncEdition = document.querySelector(".mode-edition").querySelector("p");
 
 foncEdition.addEventListener("click", function () {
-    btn1.classList.toggle("invisible");
+    modifBtn1.classList.toggle("invisible");
 
-    btn2.classList.toggle("invisible");
+    modifBtn2.classList.toggle("invisible");
 
     categoryContainer.classList.toggle("invisible");
 });
@@ -159,7 +160,8 @@ function modalRender() {
     document.querySelector(".modal").innerHTML = modalShow;
 
     workshow.forEach((element) => {
-        const domModal = `<div class="article" data-id="${element.id}">
+        const workModal = `
+        <div class="article" data-id="${element.id}">
         <img
             src="${element.imageUrl}"
             alt=""
@@ -167,34 +169,30 @@ function modalRender() {
         <p>éditer</p>
         <i data-id="${element.id}" class="fa-solid fa-trash-can"></i>
     </div>`;
-        document.querySelector(".modal-articles").innerHTML += domModal;
+        document.querySelector(".modal-articles").innerHTML += workModal;
     });
 
     // Boutons pour afficher / cacher la modal
-
-    const btn = document.querySelector(".modifier-btn");
-
-    const btn2 = document.querySelector(".modifier-btn2");
 
     const modal = document.querySelector(".modal");
 
     const body = document.querySelector("body");
 
-    btn.addEventListener("click", function () {
+    modifBtn1.addEventListener("click", function () {
         modal.style.display = "block";
         body.style.overflow = "hidden";
         return modalRender();
     });
 
-    btn2.addEventListener("click", function () {
+    modifBtn2.addEventListener("click", function () {
         modal.style.display = "block";
         body.style.overflow = "hidden";
         return modalRender();
     });
 
-    const span = document.getElementById("btn-close");
+    const closeBtn = document.getElementById("btn-close");
 
-    span.addEventListener("click", function () {
+    closeBtn.addEventListener("click", function () {
         modal.style.display = "none";
         body.style.overflow = "visible";
     });
@@ -275,7 +273,7 @@ function modalRender() {
 
         document.querySelector(".modal-btn").style.display = "none";
 
-        const undertitle = `   
+        const ajtPhtModal = `   
             <form  id="form-ajtpht" method="POST">
                 <div class="modal-ajtpht">
                     <div id="file-image-container">
@@ -308,29 +306,31 @@ function modalRender() {
 
         document.querySelector(".modal-articles").innerHTML = ``;
 
-        document.querySelector(".modal-articles").innerHTML = undertitle;
+        document.querySelector(".modal-articles").innerHTML = ajtPhtModal;
 
-        const btnclose = document.querySelector("#btn-close2");
+        const btnClose = document.querySelector("#btn-close2");
 
-        btnclose.addEventListener("click", function () {
+        btnClose.addEventListener("click", function () {
             modal.style.display = "none";
+
             body.style.overflow = "visible";
         });
 
-        // Ajout des categories avec API + bouton de retour en arrière
+        // Ajout des categories sur l'input Select + bouton de retour en arrière
 
         categoryshow.forEach((e) => {
             const option = `<option  value="${e.id}">${e.name}</option>`;
+
             document.getElementById("category").innerHTML += option;
         });
 
-        const arrow = document.getElementById("arrow");
+        const arrowBack = document.getElementById("arrow");
 
-        arrow.addEventListener("click", function () {
+        arrowBack.addEventListener("click", function () {
             return modalRender();
         });
 
-        // ************ Elements du DOM pour l'aperçu de l'image de l'input file ************
+        // ************ Recherche élements du DOM pour l'aperçu de l'image de l'input file ************
 
         const imgUpload = document.querySelector("#image-upload");
 
@@ -350,7 +350,7 @@ function modalRender() {
 
         // Fonction pour l'affichage / supression de l'image input file
 
-        function imageInputFile() {
+        function imageInputFileRender() {
             inputFile.addEventListener("change", function () {
                 const [file] = inputFile.files;
 
@@ -383,7 +383,7 @@ function modalRender() {
             });
         }
 
-        imageInputFile();
+        imageInputFileRender();
 
         // ****** Elements du DOM pour le remplissage du formulaire ******
 
@@ -433,8 +433,6 @@ function modalRender() {
 
         // ************ Ajout de l'article sur l'API en "POST" ************
 
-        // Recherche élément du DOM pour category de formData
-
         formulaire.addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -477,15 +475,15 @@ function modalRender() {
                 })
                     .then((res) => res.json())
                     .then((data) => {
-                        // Recherche des éléments pour l'ajout travaux
+                        // Recherche des éléments pour l'ajout travaux dynamique
 
-                        const urlParams = new URLSearchParams(data);
+                        const resultData = new URLSearchParams(data);
 
-                        const imageUrl = urlParams.get("imageUrl");
+                        const imageUrl = resultData.get("imageUrl");
 
-                        const title = urlParams.get("title");
+                        const title = resultData.get("title");
 
-                        const Id = urlParams.get("id");
+                        const Id = resultData.get("id");
 
                         // Création de l'objet ajout travaux
 
