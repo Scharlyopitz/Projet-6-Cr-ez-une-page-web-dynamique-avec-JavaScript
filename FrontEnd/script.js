@@ -35,7 +35,7 @@ async function triArticles() {
 // ***************** Affichage du rendu categorie *****************
 
 function renderCategory() {
-    const categoryContainer = `<button class="active">Tous</button>`;
+    const categoryContainer = `<button id="Tous" class="active">Tous</button>`;
 
     document.querySelector(".category_container").innerHTML = categoryContainer;
 
@@ -437,7 +437,6 @@ function modalRender() {
 
         formulaire.addEventListener("submit", function (e) {
             e.preventDefault();
-            console.log(inputFile.value, inputTitre.value, inputSelect.value);
 
             // Traitement cas par cas pour les messages d'erreur
 
