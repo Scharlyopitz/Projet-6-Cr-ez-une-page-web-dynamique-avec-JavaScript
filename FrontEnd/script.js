@@ -78,7 +78,7 @@ function renderCategory() {
 function render() {
     workshow.forEach((element) => {
         const domElement = `
-        <figure>
+        <figure data-id="${element.id}">
             <img src="${element.imageUrl}" alt="${element.title}">
             <figcaption>${element.title}</figcaption>
         </figure>`;
@@ -208,7 +208,7 @@ function modalRender() {
 
     // ************ Suppression des travaux dans l'API ************
 
-    // Bouton de suppression des photos dans la modal
+    // Suppression des photos dans la modal
 
     const trash = document
         .querySelector(".modal-articles")
@@ -216,11 +216,19 @@ function modalRender() {
 
     const article = document.querySelectorAll(".article");
 
+    const galleryArtcile = document.querySelectorAll(".gallery figure");
+
     trash.forEach(function (element) {
         element.addEventListener("click", function () {
             let id = element.dataset.id;
 
             element.parentElement.remove();
+
+            galleryArtcile.forEach((e) => {
+                if (e.dataset.id == id) {
+                    e.remove();
+                }
+            });
 
             fetch(`http://localhost:5678/api/works/${id}`, {
                 method: "DELETE",
@@ -229,12 +237,12 @@ function modalRender() {
                     accept: "*/*",
                 },
             })
-                .then((res) => res.json())
+                .then((res) => console.log(res))
                 .then((data) => console.log(data));
         });
     });
 
-    // Bouton de suppression de la galerie
+    // Suppression de la galerie
 
     const suprGallery = document
         .querySelector(".modal-btn")
@@ -312,7 +320,7 @@ function modalRender() {
         // Ajout des categories avec API + bouton de retour en arrière
 
         categoryshow.forEach((e) => {
-            const option = `<option data-categorie="${e.id}" value="${e.name}">${e.name}</option>`;
+            const option = `<option  value="${e.id}">${e.name}</option>`;
             document.getElementById("category").innerHTML += option;
         });
 
@@ -353,7 +361,7 @@ function modalRender() {
                     btnAjoutPht.style.display = "none";
                     imgModal.style.display = "none";
                     textRequiredAjoutPht.style.display = "none";
-                    document.querySelector("#alert-image-size").innerHTML = "";
+                    errorSizeImage.innerHTML = "";
                 } else {
                     errorSizeImage.innerHTML = `L'image ne doit pas dépasser 4Mo`;
                     errorSizeImage.style.color = "red";
@@ -361,7 +369,7 @@ function modalRender() {
                 }
             });
 
-            // Bouton de suppression de la photo
+            //  Suppression de la photo
 
             const deletePhoto = document.querySelector("#file-text");
 
@@ -389,6 +397,24 @@ function modalRender() {
 
         const btnValidationForm = document.querySelector("#submit-btn");
 
+        // Fonction clear du formulaire à l'envoie
+
+        function clearFields() {
+            document.querySelector("#file").value = "";
+            document.querySelector("#titre").value = "";
+            document.querySelector("#category").value = "";
+            btnValidationForm.style.background = "";
+        }
+
+        function clearPhotoFile() {
+            imgUpload.style.display = "";
+            imageFileContainer.style.display = "";
+            btnAjoutPht.style.display = "";
+            imgModal.style.display = "";
+            textRequiredAjoutPht.style.display = "";
+            inputFile.value = "";
+        }
+
         // Ecouteur d'évènment pour la couleur du bouton du formulaire
 
         formulaire.addEventListener("input", function () {
@@ -407,8 +433,11 @@ function modalRender() {
 
         // ************ Ajout de l'article sur l'API en "POST" ************
 
+        // Recherche élément du DOM pour category de formData
+
         formulaire.addEventListener("submit", function (e) {
             e.preventDefault();
+            console.log(inputFile.value, inputTitre.value, inputSelect.value);
 
             // Traitement cas par cas pour les messages d'erreur
 
@@ -438,6 +467,8 @@ function modalRender() {
                 inputTitre.value !== "" &&
                 inputSelect.value !== ""
             ) {
+                clearPhotoFile();
+                clearFields();
                 fetch("http://localhost:5678/api/works", {
                     method: "POST",
                     body: formData,
@@ -446,10 +477,27 @@ function modalRender() {
                     },
                 })
                     .then((res) => res.json())
-                    .then((data) => console.log(data))
+                    .then((data) => {
+                        // Recherche des éléments pour l'ajout travaux
+
+                        const urlParams = new URLSearchParams(data);
+
+                        const imageUrl = urlParams.get("imageUrl");
+
+                        const title = urlParams.get("title");
+
+                        const Id = urlParams.get("id");
+
+                        // Création de l'objet ajout travaux
+
+                        const newWork = `
+                        <figure data-id="${Id}">
+                            <img src="${imageUrl}" alt="${title}">
+                            <figcaption>${title}</figcaption>
+                        </figure>`;
+                        document.querySelector(".gallery").innerHTML += newWork;
+                    })
                     .catch((error) => console.log(error));
-            } else {
-                btnValidationForm.style.background = "";
             }
         });
     });

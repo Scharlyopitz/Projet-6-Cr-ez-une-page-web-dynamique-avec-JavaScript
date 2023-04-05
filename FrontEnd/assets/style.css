@@ -215,6 +215,8 @@ li:hover {
 
 .gallery img {
     width: 100%;
+    object-fit: cover;
+    height: 405px;
 }
 #contact {
     width: 50%;
@@ -404,6 +406,7 @@ header li img {
     display: flex;
     gap: 5px;
     line-height: 30px;
+    height: 20px;
 }
 .modifier-btn2 i {
     line-height: 30px;
@@ -571,6 +574,7 @@ header li img {
 .article img {
     max-width: 78px;
     height: 104px;
+    object-fit: cover;
 }
 
 #missing {
