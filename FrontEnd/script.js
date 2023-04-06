@@ -98,7 +98,7 @@ let token = tokenJson.data.token;
 
 // Appartition du mode édition à la récupération du token
 
-if (localStorage.getItem("token")) {
+if (token) {
     document.getElementById("logIn").innerHTML = "logout";
 
     document.getElementById("logIn").style.fontWeight = "600";
@@ -330,7 +330,7 @@ function modalRender() {
             return modalRender();
         });
 
-        // ************ Recherche élements du DOM pour l'aperçu de l'image de l'input file ************
+        // **** Recherche élements du DOM pour l'aperçu de l'image de l'input file ****
 
         const imgUpload = document.querySelector("#image-upload");
 
@@ -380,6 +380,10 @@ function modalRender() {
                 imgModal.style.display = "";
                 textRequiredAjoutPht.style.display = "";
                 inputFile.value = "";
+
+                // Couleur du bouton submit à la suppression de l'image
+
+                document.querySelector("#submit-btn").style.background = "";
             });
         }
 
@@ -415,7 +419,7 @@ function modalRender() {
             inputFile.value = "";
         }
 
-        // Ecouteur d'évènment pour la couleur du bouton du formulaire
+        // **** Ecouteur d'évènment pour la couleur du bouton du formulaire ****
 
         formulaire.addEventListener("input", function () {
             if (
@@ -428,6 +432,7 @@ function modalRender() {
                 btnValidationForm.style.background = "#1d6154";
 
                 errorMissingForm.innerHTML = "";
+                errorMissingForm.style.background = "";
             }
         });
 
@@ -440,11 +445,14 @@ function modalRender() {
 
             if (inputFile.value === "") {
                 errorMissingForm.innerHTML = "Veuillez ajouter une photo";
+                errorMissingForm.style.background = "red";
             } else if (inputTitre.value === "") {
                 errorMissingForm.innerHTML = "Veuillez ajouter un titre";
+                errorMissingForm.style.background = "red";
             } else if (inputSelect.value === "") {
                 errorMissingForm.innerHTML =
                     "Veuillez sélectionner une catégorie";
+                errorMissingForm.style.background = "red";
             }
 
             // Formdata pour l'envoie du formulaire avec image
@@ -464,8 +472,13 @@ function modalRender() {
                 inputTitre.value !== "" &&
                 inputSelect.value !== ""
             ) {
+                // Reset du formulaire
+
                 clearPhotoFile();
                 clearFields();
+
+                // Ajout de la photo + titre sur l'API
+
                 fetch("http://localhost:5678/api/works", {
                     method: "POST",
                     body: formData,
@@ -485,16 +498,27 @@ function modalRender() {
 
                         const Id = resultData.get("id");
 
-                        // Création de l'objet ajout travaux
+                        // Création du travail à poster dans la gallerie
 
                         const newWork = `
                         <figure data-id="${Id}">
                             <img src="${imageUrl}" alt="${title}">
                             <figcaption>${title}</figcaption>
                         </figure>`;
+
                         document.querySelector(".gallery").innerHTML += newWork;
                     })
                     .catch((error) => console.log(error));
+                // Ajout du message pour l'ajout des travaux avec succes
+
+                errorMissingForm.innerHTML = "Ajout de la photo réussi !";
+
+                errorMissingForm.classList.add("succes");
+
+                setTimeout(
+                    () => errorMissingForm.classList.remove("succes"),
+                    4000
+                );
             }
         });
     });

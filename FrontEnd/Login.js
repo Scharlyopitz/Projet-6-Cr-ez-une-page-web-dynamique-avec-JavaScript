@@ -20,9 +20,17 @@ myForm.addEventListener("submit", function (e) {
                 location.href = "./index.html";
             } else {
                 let myError = document.getElementById("error");
+
                 myError.innerHTML =
-                    "Erreur dans l’identifiant ou le mot de passe";
-                myError.style.color = "red";
+                    "Erreur dans l’identifiant ou le mot de passe.";
+                myError.classList.add("errorMessage");
+
+                setTimeout(() => (myError.innerHTML = ""), 4000);
+
+                setTimeout(
+                    () => myError.classList.remove("errorMessage"),
+                    4000
+                );
             }
             localStorage.setItem("token", JSON.stringify({ data }));
         });
