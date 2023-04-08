@@ -267,6 +267,8 @@ footer nav ul {
     margin: 2em;
 }
 
+/* MODE EDITION */
+
 /* Bandeau du mode édition */
 
 .unhide {
@@ -274,6 +276,7 @@ footer nav ul {
 }
 
 .mode-edition {
+    z-index: 50;
     display: none;
     justify-content: center;
     align-items: center;
@@ -306,6 +309,45 @@ footer nav ul {
 }
 .mode-edition p {
     margin: 0 20px 0 10px;
+}
+
+/* Boutons pour modifier les projets */
+
+.modifier-btn {
+    cursor: pointer;
+    display: flex;
+    width: 80%;
+    gap: 5px;
+    margin: auto;
+    margin-top: 10px;
+}
+.modifier-btn2 {
+    cursor: pointer;
+    display: flex;
+    gap: 5px;
+    line-height: 30px;
+    height: 20px;
+}
+.modifier-btn2 i {
+    line-height: 30px;
+}
+.modifier-btn p:hover,
+.modifier-btn2 p:hover {
+    text-decoration: underline;
+}
+.modifier-btn i,
+.modifier-btn2 i {
+    font-size: 11px;
+}
+
+.invisible {
+    display: none;
+}
+
+.for-edition {
+    display: flex;
+    gap: 31px;
+    justify-content: center;
 }
 
 /* LOGIN */
@@ -352,6 +394,7 @@ input {
 }
 
 /* Redimension de l'icone */
+
 header li img {
     width: 50%;
 }
@@ -360,7 +403,7 @@ header li img {
     margin-top: 13%;
 }
 
-/* BOUTONS TRIE */
+/* BOUTONS CATEGORIES */
 
 .category_container {
     margin-bottom: 50px;
@@ -390,45 +433,6 @@ header li img {
 .category_container button:hover {
     background-color: #1d6154;
     color: white;
-}
-
-/* Bouton modifer TEST */
-
-.modifier-btn {
-    cursor: pointer;
-    display: flex;
-    width: 80%;
-    gap: 5px;
-    margin: auto;
-    margin-top: 10px;
-}
-.modifier-btn2 {
-    cursor: pointer;
-    display: flex;
-    gap: 5px;
-    line-height: 30px;
-    height: 20px;
-}
-.modifier-btn2 i {
-    line-height: 30px;
-}
-.modifier-btn p:hover,
-.modifier-btn2 p:hover {
-    text-decoration: underline;
-}
-.modifier-btn i,
-.modifier-btn2 i {
-    font-size: 11px;
-}
-
-.invisible {
-    display: none;
-}
-
-.for-edition {
-    display: flex;
-    gap: 31px;
-    justify-content: center;
 }
 
 /* MODAL */

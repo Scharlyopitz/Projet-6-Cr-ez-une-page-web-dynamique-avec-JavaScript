@@ -35,9 +35,9 @@ async function displayWork() {
 // ***************** Affichage du rendu categorie *****************
 
 function categoryRender() {
-    const categoryContainer = `<button id="Tous" class="active">Tous</button>`;
-
-    document.querySelector(".category_container").innerHTML = categoryContainer;
+    document.querySelector(
+        ".category_container"
+    ).innerHTML = `<button id="Tous" class="active">Tous</button>`;
 
     categoryshow.forEach((element) => {
         const categoryContainer = `<button data-category="${element.name}">${element.name}</button>`;
@@ -214,19 +214,13 @@ function modalRender() {
 
     const article = document.querySelectorAll(".article");
 
-    const galleryArtcile = document.querySelectorAll(".gallery figure");
+    const galleryArticle = document.querySelectorAll(".gallery figure");
+
+    const modalArticles = document.querySelectorAll(".modal-articles .article");
 
     trash.forEach(function (element) {
         element.addEventListener("click", function () {
             let id = element.dataset.id;
-
-            element.parentElement.remove();
-
-            galleryArtcile.forEach((e) => {
-                if (e.dataset.id == id) {
-                    e.remove();
-                }
-            });
 
             fetch(`http://localhost:5678/api/works/${id}`, {
                 method: "DELETE",
@@ -234,9 +228,23 @@ function modalRender() {
                     Authorization: `Bearer ${token}`,
                     accept: "*/*",
                 },
-            })
-                .then((res) => console.log(res))
-                .then((data) => console.log(data));
+            }).then((res) => {
+                console.log(res);
+
+                if (res.ok === true) {
+                    // Suppression du projet dans la modal
+                    element.parentElement.remove();
+
+                    // Suppression du projet dans la gallerie
+                    galleryArticle.forEach((e) => {
+                        if (e.dataset.id == id) {
+                            e.remove();
+                        }
+                    });
+
+                    // console.log(workshow.filter(works => works ));
+                }
+            });
         });
     });
 
@@ -319,7 +327,7 @@ function modalRender() {
         // Ajout des categories sur l'input Select + bouton de retour en arrière
 
         categoryshow.forEach((e) => {
-            const option = `<option  value="${e.id}">${e.name}</option>`;
+            const option = `<option  value="${e.id}" >${e.name}</option>`;
 
             document.getElementById("category").innerHTML += option;
         });
@@ -496,29 +504,37 @@ function modalRender() {
 
                         const title = resultData.get("title");
 
-                        const Id = resultData.get("id");
+                        const id = resultData.get("id");
+
+                        const categoryId = resultData.get("categoryId");
+
+                        // Injection des données du nouveau projet dans l'API
+
+                        const newWork = { id, title, imageUrl, categoryId };
+
+                        workshow.push(newWork);
 
                         // Création du travail à poster dans la gallerie
 
-                        const newWork = `
-                        <figure data-id="${Id}">
+                        document.querySelector(".gallery").innerHTML += `
+                        <figure data-id="${id}">
                             <img src="${imageUrl}" alt="${title}">
                             <figcaption>${title}</figcaption>
                         </figure>`;
 
-                        document.querySelector(".gallery").innerHTML += newWork;
+                        // Ajout du message pour l'ajout des travaux avec succès
+
+                        errorMissingForm.innerHTML =
+                            "Ajout de la photo réussi !";
+
+                        errorMissingForm.classList.add("succes");
+
+                        setTimeout(
+                            () => errorMissingForm.classList.remove("succes"),
+                            4000
+                        );
                     })
                     .catch((error) => console.log(error));
-                // Ajout du message pour l'ajout des travaux avec succes
-
-                errorMissingForm.innerHTML = "Ajout de la photo réussi !";
-
-                errorMissingForm.classList.add("succes");
-
-                setTimeout(
-                    () => errorMissingForm.classList.remove("succes"),
-                    4000
-                );
             }
         });
     });
