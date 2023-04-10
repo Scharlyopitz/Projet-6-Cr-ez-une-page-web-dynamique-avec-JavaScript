@@ -473,6 +473,10 @@ function modalRender() {
 
             formData.append("category", e.target.category.value);
 
+            // Prise des information de la catégorie pour l'ajout du nouveau projet
+
+            const category = workshow[e.target.category.value - 1].category;
+
             // Traitement du fetch une fois que tout le formulaire est rempli
 
             if (
@@ -496,43 +500,62 @@ function modalRender() {
                 })
                     .then((res) => res.json())
                     .then((data) => {
-                        // Recherche des éléments pour l'ajout travaux dynamique
+                        if (data.id) {
+                            // Recherche des éléments pour l'ajout travaux dynamique
 
-                        const resultData = new URLSearchParams(data);
+                            const imageUrl = data.imageUrl;
 
-                        const imageUrl = resultData.get("imageUrl");
+                            const title = data.title;
 
-                        const title = resultData.get("title");
+                            const id = data.id;
 
-                        const id = resultData.get("id");
+                            // Injection des données du nouveau projet dans l'API
 
-                        const categoryId = resultData.get("categoryId");
+                            const newWork = {
+                                id,
+                                title,
+                                imageUrl,
+                                category,
+                            };
 
-                        // Injection des données du nouveau projet dans l'API
+                            workshow.push(newWork);
 
-                        const newWork = { id, title, imageUrl, categoryId };
+                            // Création du travail à poster dans la gallerie
 
-                        workshow.push(newWork);
+                            document.querySelector(".gallery").innerHTML += `
+                            <figure data-id="${id}">
+                                <img src="${imageUrl}" alt="${title}">
+                                <figcaption>${title}</figcaption>
+                            </figure>`;
 
-                        // Création du travail à poster dans la gallerie
+                            // Ajout du message pour l'ajout du projet avec succès
 
-                        document.querySelector(".gallery").innerHTML += `
-                        <figure data-id="${id}">
-                            <img src="${imageUrl}" alt="${title}">
-                            <figcaption>${title}</figcaption>
-                        </figure>`;
+                            errorMissingForm.innerHTML =
+                                "Ajout de la photo réussi !";
 
-                        // Ajout du message pour l'ajout des travaux avec succès
+                            errorMissingForm.classList.add("succes");
 
-                        errorMissingForm.innerHTML =
-                            "Ajout de la photo réussi !";
+                            setTimeout(
+                                () =>
+                                    errorMissingForm.classList.remove("succes"),
+                                4000
+                            );
+                        } else {
+                            // Ajout du message d'échec d'ajout du projet
 
-                        errorMissingForm.classList.add("succes");
+                            errorMissingForm.innerHTML =
+                                "Echec de l'ajout de la photo ";
 
-                        setTimeout(
-                            () => errorMissingForm.classList.remove("succes"),
-                            4000
-                        );
+                            errorMissingForm.classList.add("errorMessage");
+
+                            setTimeout(
+                                () =>
+                                    errorMissingForm.classList.remove(
+                                        "errorMessage"
+                                    ),
+                                4000
+                            );
+                        }
                     })
                     .catch((error) => console.log(error));
             }
