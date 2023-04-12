@@ -216,8 +216,6 @@ function modalRender() {
 
     const galleryArticle = document.querySelectorAll(".gallery figure");
 
-    const modalArticles = document.querySelectorAll(".modal-articles .article");
-
     trash.forEach(function (element) {
         element.addEventListener("click", function () {
             let id = element.dataset.id;
