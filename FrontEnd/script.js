@@ -239,8 +239,6 @@ function modalRender() {
                             e.remove();
                         }
                     });
-
-                    // console.log(workshow.filter(works => works ));
                 }
             });
         });
