@@ -341,7 +341,7 @@ footer nav ul {
 }
 
 .invisible {
-    display: none;
+    display: none !important;
 }
 
 .for-edition {
